@@ -1,31 +1,29 @@
-name: Descompactar Projeto ZIP no Repositório
+name: Descompactar Projeto ZIP (Sem Alterar Workflows)
 
 on:
   push:
     paths:
-      - '*.zip'
+      - "*.zip"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  unpack-and-commit:
-    name: Extrair STRIKE_FORCE_MOBILE.zip
+  unpack:
     runs-on: ubuntu-latest
     steps:
       - name: 1. Baixar Repositório
         uses: actions/checkout@v4
 
-      - name: 2. Descompactar Arquivo ZIP na Raiz
+      - name: 2. Descompactar ZIP na Raiz do Projeto
         run: |
           if [ -f "STRIKE_FORCE_MOBILE.zip" ]; then
-            unzip -o STRIKE_FORCE_MOBILE.zip -d tmp_extract/
+            unzip -o STRIKE_FORCE_MOBILE.zip -d tmp_extract
             if [ -d "tmp_extract/STRIKE_FORCE_MOBILE" ]; then
-              cp -rf tmp_extract/STRIKE_FORCE_MOBILE/* .
-              cp -rf tmp_extract/STRIKE_FORCE_MOBILE/.github . 2>/dev/null || true
+              cp -rf tmp_extract/STRIKE_FORCE_MOBILE/. .
             else
-              cp -rf tmp_extract/* .
+              cp -rf tmp_extract/. .
             fi
             rm -rf tmp_extract STRIKE_FORCE_MOBILE.zip
           else
@@ -33,11 +31,12 @@ jobs:
             exit 0
           fi
 
-      - name: 3. Salvar Arquivos Extraídos no GitHub
+      - name: 3. Ignorar .github/workflows no Push e Comitar Arquivos do Jogo
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "chore: descompactar projeto STRIKE FORCE MOBILE automaticamente" || echo "Sem alterações"
+          git reset HEAD -- .github/workflows 2>/dev/null || true
+          git checkout -- .github/workflows 2>/dev/null || true
+          git diff --cached --quiet || git commit -m "chore: extrair arquivos do projeto STRIKE FORCE MOBILE"
           git push
-          
