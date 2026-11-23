@@ -10,6 +10,7 @@ env:
   GODOT_RELEASE: "stable"
   ANDROID_COMPILE_SDK: "34"
   ANDROID_BUILD_TOOLS: "34.0.0"
+  ANDROID_HOME: "/usr/local/lib/android/sdk"
 
 jobs:
   build-android-apk:
@@ -26,21 +27,29 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: 3. Configurar Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: 4. Aceitar Licenças e Instalar Plataformas e Build Tools Android
+      - name: 3. Preparar Android SDK e Aceitar Licenças
         run: |
           set -e
-          for i in 1 2 3; do
-            yes | sdkmanager --sdk_root="${ANDROID_HOME}" --licenses >/dev/null 2>&1 || true
-          done
-          yes | sdkmanager --sdk_root="${ANDROID_HOME}" \
+          export ANDROID_SDK_ROOT="${ANDROID_HOME}"
+          CMDLINE_BIN=$(find "${ANDROID_HOME}/cmdline-tools" -name "sdkmanager" -type f 2>/dev/null | head -n 1 || true)
+          if [ -z "${CMDLINE_BIN}" ]; then
+            mkdir -p "${ANDROID_HOME}/cmdline-tools/latest"
+            wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
+            unzip -q commandlinetools-linux-11076708_latest.zip -d "${ANDROID_HOME}/cmdline-tools/latest"
+            if [ -d "${ANDROID_HOME}/cmdline-tools/latest/cmdline-tools" ]; then
+              mv "${ANDROID_HOME}/cmdline-tools/latest/cmdline-tools"/* "${ANDROID_HOME}/cmdline-tools/latest/"
+              rmdir "${ANDROID_HOME}/cmdline-tools/latest/cmdline-tools"
+            fi
+            CMDLINE_BIN="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+          fi
+          chmod +x "${CMDLINE_BIN}"
+          yes | "${CMDLINE_BIN}" --sdk_root="${ANDROID_HOME}" --licenses >/dev/null 2>&1 || true
+          yes | "${CMDLINE_BIN}" --sdk_root="${ANDROID_HOME}" \
+            "platform-tools" \
             "platforms;android-${ANDROID_COMPILE_SDK}" \
-            "build-tools;${ANDROID_BUILD_TOOLS}" \
-            "platform-tools"
+            "build-tools;${ANDROID_BUILD_TOOLS}"
 
-      - name: 5. Instalar Godot 4.3 Headless e Templates Android
+      - name: 4. Instalar Godot 4.3 Headless e Templates Android
         run: |
           mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}
           wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip
@@ -52,12 +61,12 @@ jobs:
           unzip -q Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz
           mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
 
-      - name: 6. Gerar Debug Keystore para Assinatura APK
+      - name: 5. Gerar Debug Keystore para Assinatura APK
         run: |
           mkdir -p ~/.android
           keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore ~/.android/debug.keystore -storepass android -dname "CN=StrikeForce,O=Android,C=BR" -validity 9999
 
-      - name: 7. Configurar Godot Editor Settings
+      - name: 6. Configurar Godot Editor Settings
         run: |
           mkdir -p ~/.config/godot
           cat <<EOF > ~/.config/godot/editor_settings-4.3.tres
@@ -69,20 +78,21 @@ jobs:
           export/android/debug_keystore_pass = "android"
           EOF
 
-      - name: 8. Importar Recursos e Validar Projeto
+      - name: 7. Importar Recursos e Validar Projeto
         run: |
           godot --headless --path . --import
           godot --headless --path . --script res://tests/validate_project.gd
 
-      - name: 9. Exportar APK Android
+      - name: 8. Exportar APK Android
         run: |
           mkdir -p build
           godot --headless --path . --export-debug "Android" build/strike_force_mobile.apk
           ls -lh build/strike_force_mobile.apk
 
-      - name: 10. Publicar APK como Artifact
+      - name: 9. Publicar APK como Artifact
         uses: actions/upload-artifact@v4
         with:
           name: STRIKE_FORCE_MOBILE_APK
           path: build/strike_force_mobile.apk
           retention-days: 30
+          
