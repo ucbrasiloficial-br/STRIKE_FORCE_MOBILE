@@ -1,0 +1,19 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/bots/tactical_bot.gd" id="1_bot"]
+[ext_resource type="PackedScene" path="res://assets/characters/operative_phantom_rival.glb" id="2_model"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_b"]
+radius = 0.36
+height = 1.8
+[node name="TacticalBot" type="CharacterBody3D"]
+script = ExtResource("1_bot")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_b")
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+path_desired_distance = 0.8
+target_desired_distance = 1.2
+[node name="ModelHolder" type="Node3D" parent="."]
+[node name="OperativeMesh" parent="ModelHolder" instance=ExtResource("2_model")]
+[node name="LineOfSightRay" type="RayCast3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.45, 0)
+target_position = Vector3(0, 0, -30)

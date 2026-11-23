@@ -1,0 +1,25 @@
+[gd_scene load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/player/fps_player.gd" id="1_player"]
+[ext_resource type="PackedScene" path="res://assets/equipment/pulse_marker_vx1.glb" id="2_marker"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_p"]
+radius = 0.36
+height = 1.8
+[node name="FPSPlayer" type="CharacterBody3D"]
+script = ExtResource("1_player")
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CapsuleShape3D_p")
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.62, 0)
+[node name="Camera3D" type="Camera3D" parent="Head"]
+fov = 75.0
+[node name="MarkerMount" type="Node3D" parent="Head/Camera3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.22, -0.2, -0.38)
+[node name="PulseMarkerModel" parent="Head/Camera3D/MarkerMount" instance=ExtResource("2_marker")]
+[node name="MuzzleLight" type="OmniLight3D" parent="Head/Camera3D/MarkerMount"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.03, -0.62)
+light_color = Color(0.1, 0.85, 1, 1)
+light_energy = 0.0
+omni_range = 4.5
+[node name="PulseRay" type="RayCast3D" parent="Head/Camera3D"]
+target_position = Vector3(0, 0, -85)

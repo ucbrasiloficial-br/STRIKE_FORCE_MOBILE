@@ -1,0 +1,172 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/interface/touch_hud.gd" id="1_hud"]
+[node name="TouchHUD" type="CanvasLayer"]
+process_mode = 3
+script = ExtResource("1_hud")
+[node name="DamageOverlay" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+color = Color(0.55, 0.1, 0.95, 0)
+[node name="TopBar" type="PanelContainer" parent="."]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 48.0
+[node name="HBox" type="HBoxContainer" parent="TopBar"]
+layout_mode = 2
+alignment = 1
+[node name="ScoreLabel" type="Label" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "ALPHA 0 | 0 OMEGA"
+horizontal_alignment = 1
+[node name="TimerLabel" type="Label" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "03:00"
+horizontal_alignment = 1
+[node name="ObjectiveLabel" type="Label" parent="TopBar/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "META: 15 MARCAÇÕES"
+horizontal_alignment = 1
+[node name="PauseBtn" type="Button" parent="TopBar/HBox"]
+custom_minimum_size = Vector2(96, 40)
+layout_mode = 2
+text = "PAUSA"
+[node name="CenterCrosshair" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+mouse_filter = 2
+[node name="Dot" type="ColorRect" parent="CenterCrosshair"]
+offset_left = -3.0
+offset_top = -3.0
+offset_right = 3.0
+offset_bottom = 3.0
+mouse_filter = 2
+color = Color(0.1, 0.85, 1, 0.95)
+[node name="HitMarker" type="Label" parent="CenterCrosshair"]
+offset_left = -16.0
+offset_top = -18.0
+offset_right = 16.0
+offset_bottom = 18.0
+text = "X"
+horizontal_alignment = 1
+vertical_alignment = 1
+[node name="BottomLeft" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -240.0
+offset_right = 260.0
+mouse_filter = 2
+[node name="ShieldBar" type="ProgressBar" parent="BottomLeft"]
+offset_left = 24.0
+offset_top = 12.0
+offset_right = 230.0
+offset_bottom = 34.0
+value = 100.0
+[node name="JoystickArea" type="ColorRect" parent="BottomLeft"]
+offset_left = 36.0
+offset_top = 56.0
+offset_right = 196.0
+offset_bottom = 216.0
+mouse_filter = 2
+color = Color(0.12, 0.16, 0.26, 0.55)
+[node name="Knob" type="ColorRect" parent="BottomLeft/JoystickArea"]
+offset_left = 54.0
+offset_top = 54.0
+offset_right = 106.0
+offset_bottom = 106.0
+mouse_filter = 2
+color = Color(0.05, 0.75, 1, 0.85)
+[node name="BottomRight" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -300.0
+offset_top = -250.0
+mouse_filter = 2
+[node name="AmmoLabel" type="Label" parent="BottomRight"]
+offset_left = 40.0
+offset_top = 10.0
+offset_right = 276.0
+offset_bottom = 36.0
+text = "PULSO 30 / 30"
+horizontal_alignment = 2
+[node name="FireBtn" type="Button" parent="BottomRight"]
+offset_left = 165.0
+offset_top = 95.0
+offset_right = 275.0
+offset_bottom = 205.0
+text = "PULSO"
+[node name="JumpBtn" type="Button" parent="BottomRight"]
+offset_left = 75.0
+offset_top = 55.0
+offset_right = 150.0
+offset_bottom = 120.0
+text = "SALTAR"
+[node name="CrouchBtn" type="Button" parent="BottomRight"]
+offset_left = 75.0
+offset_top = 135.0
+offset_right = 150.0
+offset_bottom = 200.0
+text = "AGACHAR"
+[node name="ReloadBtn" type="Button" parent="BottomRight"]
+offset_left = 175.0
+offset_top = 40.0
+offset_right = 275.0
+offset_bottom = 86.0
+text = "RECARGA"
+[node name="InteractButton" type="Button" parent="BottomRight"]
+visible = false
+offset_left = -40.0
+offset_top = -15.0
+offset_right = 275.0
+offset_bottom = 32.0
+text = "SINCRONIZAR RELÉ"
+[node name="PauseOverlay" type="PanelContainer" parent="."]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -120.0
+offset_right = 180.0
+offset_bottom = 120.0
+[node name="VBox" type="VBoxContainer" parent="PauseOverlay"]
+layout_mode = 2
+theme_override_constants/separation = 14
+alignment = 1
+[node name="Title" type="Label" parent="PauseOverlay/VBox"]
+layout_mode = 2
+text = "JOGO PAUSADO"
+horizontal_alignment = 1
+[node name="ResumeBtn" type="Button" parent="PauseOverlay/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "CONTINUAR"
+[node name="QuitBtn" type="Button" parent="PauseOverlay/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "ABANDONAR PARTIDA"
+[connection signal="pressed" from="TopBar/HBox/PauseBtn" to="." method="_on_pause_pressed"]
+[connection signal="button_down" from="BottomRight/FireBtn" to="." method="_on_fire_down"]
+[connection signal="button_up" from="BottomRight/FireBtn" to="." method="_on_fire_up"]
+[connection signal="pressed" from="BottomRight/JumpBtn" to="." method="_on_jump_pressed"]
+[connection signal="pressed" from="BottomRight/CrouchBtn" to="." method="_on_crouch_pressed"]
+[connection signal="pressed" from="BottomRight/ReloadBtn" to="." method="_on_reload_pressed"]
+[connection signal="pressed" from="BottomRight/InteractButton" to="." method="_on_interact_pressed"]
+[connection signal="pressed" from="PauseOverlay/VBox/ResumeBtn" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="PauseOverlay/VBox/QuitBtn" to="." method="_on_quit_match_pressed"]

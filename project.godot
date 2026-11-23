@@ -1,0 +1,31 @@
+config_version=5
+
+[application]
+config/name="STRIKE FORCE MOBILE"
+config/description="FPS 3D tático original para Android com campanha, bots e equipamento de marcação por energia."
+run/main_scene="res://scenes/menus/main_menu.tscn"
+config/features=PackedStringArray("4.3", "Mobile")
+boot_splash/bg_color=Color(0.0470588, 0.0588235, 0.0941176, 1)
+boot_splash/image="res://assets/ui/strike_force_logo.png"
+config/icon="res://assets/ui/app_icon.png"
+
+[autoload]
+GameManager="*res://scripts/systems/game_manager.gd"
+SaveSystem="*res://scripts/systems/save_system.gd"
+GraphicsManager="*res://scripts/systems/graphics_manager.gd"
+AudioManager="*res://scripts/systems/audio_manager.gd"
+
+[display]
+window/size/viewport_width=1280
+window/size/viewport_height=720
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
+window/handheld/orientation=0
+
+[input_devices]
+pointing/emulate_touch_from_mouse=true
+
+[rendering]
+renderer/rendering_method="mobile"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.05, 0.07, 0.11, 1)

@@ -1,0 +1,129 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scripts/interface/main_menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" path="res://assets/ui/strike_force_logo.png" id="2_logo"]
+[sub_resource type="Environment" id="Environment_preview"]
+background_mode = 1
+background_color = Color(0.05, 0.06, 0.1, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.65, 0.72, 0.95, 1)
+ambient_light_energy = 1.2
+[node name="MainMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.047, 0.058, 0.094, 1)
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 20
+[node name="RootVBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+[node name="Header" type="HBoxContainer" parent="Margin/RootVBox"]
+layout_mode = 2
+[node name="Logo" type="TextureRect" parent="Margin/RootVBox/Header"]
+custom_minimum_size = Vector2(420, 96)
+layout_mode = 2
+texture = ExtResource("2_logo")
+expand_mode = 1
+stretch_mode = 5
+[node name="ProfileBox" type="PanelContainer" parent="Margin/RootVBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="ProfileLabel" type="Label" parent="Margin/RootVBox/Header/ProfileBox"]
+layout_mode = 2
+text = "OPERADOR_01 | NÍVEL 1 (0 XP)"
+horizontal_alignment = 2
+vertical_alignment = 1
+[node name="ContentHBox" type="HBoxContainer" parent="Margin/RootVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 20
+[node name="LeftPanel" type="PanelContainer" parent="Margin/RootVBox/ContentHBox"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="Margin/RootVBox/ContentHBox/LeftPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+[node name="OperativeTitle" type="Label" parent="Margin/RootVBox/ContentHBox/LeftPanel/VBox"]
+layout_mode = 2
+text = "SELEÇÃO DE OPERADOR"
+[node name="OperativeInfo" type="Label" parent="Margin/RootVBox/ContentHBox/LeftPanel/VBox"]
+layout_mode = 2
+text = "CMDR. KAEL VANCE"
+[node name="NextOperativeBtn" type="Button" parent="Margin/RootVBox/ContentHBox/LeftPanel/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "ALTERNAR OPERADOR 3D"
+[node name="CampaignBtn" type="Button" parent="Margin/RootVBox/ContentHBox/LeftPanel/VBox"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "MODO CAMPANHA: COMPLEXO URBANO"
+[node name="BotsBtn" type="Button" parent="Margin/RootVBox/ContentHBox/LeftPanel/VBox"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+text = "PARTIDA TÁTICA VS BOTS (OFFLINE)"
+[node name="CenterPreview" type="PanelContainer" parent="Margin/RootVBox/ContentHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+[node name="SubViewportContainer" type="SubViewportContainer" parent="Margin/RootVBox/ContentHBox/CenterPreview"]
+layout_mode = 2
+stretch = true
+[node name="SubViewport" type="SubViewport" parent="Margin/RootVBox/ContentHBox/CenterPreview/SubViewportContainer"]
+own_world_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(480, 520)
+render_target_update_mode = 4
+[node name="PreviewStage" type="Node3D" parent="Margin/RootVBox/ContentHBox/CenterPreview/SubViewportContainer/SubViewport"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="Margin/RootVBox/ContentHBox/CenterPreview/SubViewportContainer/SubViewport/PreviewStage"]
+environment = SubResource("Environment_preview")
+[node name="Camera3D" type="Camera3D" parent="Margin/RootVBox/ContentHBox/CenterPreview/SubViewportContainer/SubViewport/PreviewStage"]
+transform = Transform3D(1, 0, 0, 0, 0.984808, 0.173648, 0, -0.173648, 0.984808, 0, 1.35, 2.55)
+[node name="KeyLight" type="DirectionalLight3D" parent="Margin/RootVBox/ContentHBox/CenterPreview/SubViewportContainer/SubViewport/PreviewStage"]
+transform = Transform3D(0.866025, -0.25, 0.433013, 0, 0.866025, 0.5, -0.5, -0.433013, 0.75, 2, 3, 2)
+light_energy = 1.6
+[node name="OperativeAnchor" type="Node3D" parent="Margin/RootVBox/ContentHBox/CenterPreview/SubViewportContainer/SubViewport/PreviewStage"]
+[node name="RightPanel" type="PanelContainer" parent="Margin/RootVBox/ContentHBox"]
+custom_minimum_size = Vector2(320, 0)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="Margin/RootVBox/ContentHBox/RightPanel"]
+layout_mode = 2
+theme_override_constants/separation = 14
+[node name="SettingsTitle" type="Label" parent="Margin/RootVBox/ContentHBox/RightPanel/VBox"]
+layout_mode = 2
+text = "CONFIGURAÇÕES & QUALIDADE"
+[node name="DifficultyOption" type="OptionButton" parent="Margin/RootVBox/ContentHBox/RightPanel/VBox"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+[node name="QualityOption" type="OptionButton" parent="Margin/RootVBox/ContentHBox/RightPanel/VBox"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+[node name="SensLabel" type="Label" parent="Margin/RootVBox/ContentHBox/RightPanel/VBox"]
+layout_mode = 2
+text = "SENSIBILIDADE TOUCH"
+[node name="SensSlider" type="HSlider" parent="Margin/RootVBox/ContentHBox/RightPanel/VBox"]
+layout_mode = 2
+min_value = 0.1
+max_value = 1.2
+step = 0.05
+value = 0.35
+[connection signal="pressed" from="Margin/RootVBox/ContentHBox/LeftPanel/VBox/NextOperativeBtn" to="." method="_on_next_operative_pressed"]
+[connection signal="pressed" from="Margin/RootVBox/ContentHBox/LeftPanel/VBox/CampaignBtn" to="." method="_on_start_campaign_pressed"]
+[connection signal="pressed" from="Margin/RootVBox/ContentHBox/LeftPanel/VBox/BotsBtn" to="." method="_on_start_bots_pressed"]
+[connection signal="item_selected" from="Margin/RootVBox/ContentHBox/RightPanel/VBox/QualityOption" to="." method="_on_quality_selected"]
+[connection signal="value_changed" from="Margin/RootVBox/ContentHBox/RightPanel/VBox/SensSlider" to="." method="_on_sens_changed"]
