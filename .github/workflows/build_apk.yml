@@ -1,0 +1,83 @@
+name: Build APK Android - STRIKE FORCE MOBILE
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+env:
+  GODOT_VERSION: "4.3"
+  GODOT_RELEASE: "stable"
+  ANDROID_COMPILE_SDK: "34"
+  ANDROID_BUILD_TOOLS: "34.0.0"
+
+jobs:
+  build-android-apk:
+    name: Validar & Gerar APK Android
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 1. Baixar Repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: 3. Configurar Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: 4. Instalar Plataformas e Build Tools Android
+        run: |
+          yes | sdkmanager --licenses > /dev/null 2>&1 || true
+          sdkmanager "platforms;android-${ANDROID_COMPILE_SDK}" "build-tools;${ANDROID_BUILD_TOOLS}" "platform-tools"
+
+      - name: 5. Instalar Godot 4.3 Headless e Templates Android
+        run: |
+          mkdir -p ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip
+          unzip -q Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64.zip
+          mv Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_linux.x86_64 /usr/local/bin/godot
+          chmod +x /usr/local/bin/godot
+
+          wget -q https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-${GODOT_RELEASE}/Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz
+          unzip -q Godot_v${GODOT_VERSION}-${GODOT_RELEASE}_export_templates.tpz
+          mv templates/* ~/.local/share/godot/export_templates/${GODOT_VERSION}.${GODOT_RELEASE}/
+
+      - name: 6. Gerar Debug Keystore para Assinatura APK
+        run: |
+          mkdir -p ~/.android
+          keytool -keyalg RSA -genkeypair -alias androiddebugkey -keypass android -keystore ~/.android/debug.keystore -storepass android -dname "CN=StrikeForce,O=Android,C=BR" -validity 9999
+
+      - name: 7. Configurar Godot Editor Settings
+        run: |
+          mkdir -p ~/.config/godot
+          cat <<EOF > ~/.config/godot/editor_settings-4.3.tres
+          [gd_resource type="EditorSettings" format=3]
+          [resource]
+          export/android/android_sdk_path = "${ANDROID_HOME}"
+          export/android/debug_keystore = "${HOME}/.android/debug.keystore"
+          export/android/debug_keystore_user = "androiddebugkey"
+          export/android/debug_keystore_pass = "android"
+          EOF
+
+      - name: 8. Importar Recursos e Validar Projeto
+        run: |
+          godot --headless --path . --import
+          godot --headless --path . --script res://tests/validate_project.gd
+
+      - name: 9. Exportar APK Android
+        run: |
+          mkdir -p build
+          godot --headless --path . --export-debug "Android" build/strike_force_mobile.apk
+          ls -lh build/strike_force_mobile.apk
+
+      - name: 10. Publicar APK como Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: STRIKE_FORCE_MOBILE_APK
+          path: build/strike_force_mobile.apk
+          retention-days: 30
+          
