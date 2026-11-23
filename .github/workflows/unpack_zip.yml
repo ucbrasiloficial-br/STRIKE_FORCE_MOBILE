@@ -1,1 +1,43 @@
+name: Descompactar Projeto ZIP no Repositório
 
+on:
+  push:
+    paths:
+      - '*.zip'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  unpack-and-commit:
+    name: Extrair STRIKE_FORCE_MOBILE.zip
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Baixar Repositório
+        uses: actions/checkout@v4
+
+      - name: 2. Descompactar Arquivo ZIP na Raiz
+        run: |
+          if [ -f "STRIKE_FORCE_MOBILE.zip" ]; then
+            unzip -o STRIKE_FORCE_MOBILE.zip -d tmp_extract/
+            if [ -d "tmp_extract/STRIKE_FORCE_MOBILE" ]; then
+              cp -rf tmp_extract/STRIKE_FORCE_MOBILE/* .
+              cp -rf tmp_extract/STRIKE_FORCE_MOBILE/.github . 2>/dev/null || true
+            else
+              cp -rf tmp_extract/* .
+            fi
+            rm -rf tmp_extract STRIKE_FORCE_MOBILE.zip
+          else
+            echo "Nenhum STRIKE_FORCE_MOBILE.zip encontrado."
+            exit 0
+          fi
+
+      - name: 3. Salvar Arquivos Extraídos no GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: descompactar projeto STRIKE FORCE MOBILE automaticamente" || echo "Sem alterações"
+          git push
+          
